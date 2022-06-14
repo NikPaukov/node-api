@@ -4,7 +4,6 @@ const { use } = require('../app');
 const as = require('../repositories/usersDB.json')
 const filePath = 'repositories/usersDB.json';
 
-
 //Validaation
 
 exports.isObjValid = function(obj, properties){
@@ -20,6 +19,14 @@ exports.doesUserExistsByProperty = function(obj,propName){
     return false;
 }
 
+exports.isPutValid = function(obj, properties){
+    if(obj.hasOwnProperty("_id")) return false;
+    if(Object.keys(obj).length >= properties.length) return false;
+    for (let prop in obj) {
+        if(!properties.includes(prop)) return false
+    }
+    return true;
+}
 
 
 
@@ -56,7 +63,7 @@ exports.update = function(newUser, id){
     let user = users[userIndex];
     for(let prop in user){
         if(prop!="_id"){
-            user[prop] = newUser[prop];
+            if(newUser.hasOwnProperty(prop)) user[prop] = newUser[prop];
         }
     }
   fs.writeFileSync(filePath, JSON.stringify(users));

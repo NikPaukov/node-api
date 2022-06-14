@@ -1,0 +1,25 @@
+const Figther = require('../dbConnection');
+
+exports.findAll =  function(){
+        const result =  Figther.find();
+        
+        return result;
+  
+}
+
+
+exports.findById =  function(id){
+    const fighter =  Figther.findById(id);
+    return fighter;
+}
+exports.save =  function(input){
+    const figther = new Figther(input);
+    return  figther.save();
+    
+}
+exports.delete = function(idObj){
+    return Figther.deleteOne(idObj);
+}
+exports.update = function(idObj, newUser){
+   return Figther.updateOne(idObj, newUser);
+    }
