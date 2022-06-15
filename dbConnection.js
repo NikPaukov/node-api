@@ -1,8 +1,8 @@
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 
-fightersSchema = new mongoose.Schema({
+export let fightersSchema = new mongoose.Schema({
     _id: {type:String,required: true,},
     name: {type:String,required: true,},
     health: {type:Number,required: true,},
@@ -12,4 +12,4 @@ fightersSchema = new mongoose.Schema({
   })
 
 
-module.exports = mongoose.model('Fighter', fightersSchema)
+export let Fighter =  mongoose.model('Fighter', fightersSchema)

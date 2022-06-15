@@ -1,14 +1,13 @@
-const repositoriy = require('../repositories/mongoDbRepository');
+import * as repositoriy from '../repositories/mongoDbRepository.js'
 
-
-exports.isObjValid = function(obj, properties){
+export  function isObjValid(obj, properties){
     if(Object.keys(obj).length != properties.length) return false;
     for (let property of properties) {
         if(!obj.hasOwnProperty(property)) return false
     }
     return true;
 }
-exports.isPutValid = function(obj, properties){
+export function isPutValid(obj, properties){
     if(obj.hasOwnProperty("_id")) return false;
     if(Object.keys(obj).length >= properties.length) return false;
     for (let prop in obj) {
@@ -17,34 +16,34 @@ exports.isPutValid = function(obj, properties){
     return true;
 }
 
-exports.doesUserExistsById = function(id){
+export  function doesUserExistsById(id){
 
     return repositoriy.findById(id);
 
 }
 
 
-exports.create = function(figther){
+export function create(figther){
     return repositoriy.save(figther);
     
 }
-exports.readAll = function(){
+export function readAll(){
     
     const all =   repositoriy.findAll();
     return all;
 }
 
 
-exports.delete = function(id){
-   return repositoriy.delete({"_id":id});
+export function deleteOne(id){
+   return repositoriy.deleteOne({"_id":id});
 }
 
-exports.update = function(newUser, id){
-    return repositoriy.update({"_id":id}, newUser);
+export function update(newUser, id){
+    return repositoriy.delete({"_id":id}, newUser);
 
 }
 
 
-exports.readById = function(id){
+export function readById(id){
     return repositoriy.findById(id);
 }
