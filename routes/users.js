@@ -1,11 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const bodyParser = require('body-parser');
-const dbService = require('../services/jsonDbService');
+import { Router } from 'express';
+const router = Router();
+import bodyParser from 'body-parser';
+import { readAll, readById, isObjValid, doesUserExistsById, create, deleteOne, isPutValid, update } from '../services/mongoDbService.js';
 
-router.get('/users', function(req, res, next) { 
+router.get('/users',async function(req, res, next) { 
 try{
-  res.send(dbService.readAll());
+  const allFigthers = await  readAll();
+  res.json(allFigthers);
 } catch(e){
   console.log(e);
   return res.sendStatus(500);
@@ -15,12 +16,12 @@ try{
 
 
 
-router.get('/users/:id', function(req, res, next){
+router.get('/users/:id', async function(req, res, next){
   try{
   const id = req.params.id;
-  const user = dbService.readById(id);
+  const user = await readById(id);
   if(user == undefined) return res.sendStatus(204);
-  res.send(user);
+  res.json(user);
 } catch(e){
   console.log(e);
   return res.sendStatus(500);
@@ -28,21 +29,22 @@ router.get('/users/:id', function(req, res, next){
 })
 
 
-router.post('/users', function(req, res, next){
+router.post('/users', async function(req, res, next){
   try{
     const user = req.body;  
     const properties = ["_id", "name", "health", "attack", "defense", "source"];
   
     //validation
-    if(!dbService.isObjValid(user, properties)){
+    if(!isObjValid(user, properties)){
       return res.sendStatus(400);
     }
-    if(dbService.doesUserExistsByProperty(user, "_id")){
-      return res.status(409).send('User with such id already exists');
+    
+    if(await doesUserExistsById(user._id)){
+      return res.status(409).json({message:'User with such id already exists'});
     }
   
     //adding
-    dbService.create(user);
+    await create(user)
     res.sendStatus(201);
   } catch(e){
     console.log(e);
@@ -51,11 +53,11 @@ router.post('/users', function(req, res, next){
   })
 
 
-router.delete('/users/:id', function(req, res, next){
+router.delete('/users/:id', async function(req, res, next){
   try{
 
   const id = req.params.id;
-  dbService.delete(id);
+  await deleteOne(id);
   res.sendStatus(200);
 } catch(e){
   console.log(e);
@@ -63,21 +65,21 @@ router.delete('/users/:id', function(req, res, next){
 }
 })
 
-router.put('/users/:id', function(req, res, next){
+router.put('/users/:id',async function(req, res, next){
   try{
   const id = req.params.id;
   const newUser = req.body;
   const properties = ["name", "health", "attack", "defense", "source"];
 
-  if(!dbService.isObjValid(newUser, properties)){
+  if(!isPutValid(newUser, properties)){
     return res.sendStatus(400);
   }
 
-  const updated = dbService.update(newUser, id);
-  res.send(updated);
+  const updated = await update(newUser, id);
+  res.json(updated);
 } catch(e){
   console.log(e);
   return res.sendStatus(500);
 }
 })
-module.exports = router;
+export default router;
